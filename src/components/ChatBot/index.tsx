@@ -32,6 +32,7 @@ function buildSourceUrl(docFolder: string, url: string): string {
     try { url = new URL(url).pathname; } catch { return url; }
   }
   url = url.replace(/\/index\.html$/, '/');
+  if (!url.endsWith('/')) url += '/';
   return `${base}${url.startsWith('/') ? url : `/${url}`}`;
 }
 
