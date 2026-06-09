@@ -1,4 +1,4 @@
-name: CD
+name: CD – Deploy
 
 on:
   push:
@@ -39,25 +39,3 @@ jobs:
 
       - name: Deploy a GCS
         run: gcloud storage rsync -R --delete-unmatched-destination-objects ./build gs://${{ secrets.GCS_BUCKET }}
-
-  index:
-    name: Indexar docs en RAG
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: |
-      contains(join(github.event.commits.*.modified, ' '), 'docs/') ||
-      contains(join(github.event.commits.*.added, ' '), 'docs/')
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: NaoDekoNeko/thesis-rag-microservice/indexer@master
-        with:
-          docs-path: ${{ github.workspace }}/docs
-          doc-folder: thesis-doc-test-2
-          clear: 'true'
-          gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
-          db-host: ${{ secrets.DB_HOST }}
-          db-name: ${{ secrets.DB_NAME }}
-          db-user: ${{ secrets.DB_USER }}
-          db-password: ${{ secrets.DB_PASSWORD }}

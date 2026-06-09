@@ -1,0 +1,38 @@
+name: CD – Index RAG
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      clear:
+        description: 'Carga total (true) o incremental (false)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['true', 'false']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  index:
+    name: Indexar docs en RAG
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: NaoDekoNeko/thesis-rag-microservice/indexer@master
+        with:
+          docs-path: ${{ github.workspace }}/docs
+          doc-folder: thesis-doc-test-2
+          clear: ${{ github.event.inputs.clear || 'true' }}
+          gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
+          db-host: ${{ secrets.DB_HOST }}
+          db-name: ${{ secrets.DB_NAME }}
+          db-user: ${{ secrets.DB_USER }}
+          db-password: ${{ secrets.DB_PASSWORD }}
