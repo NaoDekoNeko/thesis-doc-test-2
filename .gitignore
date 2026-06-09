@@ -1,0 +1,11 @@
+node_modules/
+build/
+.docusaurus/
+*.bkp
+*.bak
+*.orig
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
