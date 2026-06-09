@@ -40,3 +40,10 @@ jobs:
 
       - name: Deploy a GCS
         run: gcloud storage rsync -R --delete-unmatched-destination-objects ./build gs://${{ secrets.GCS_BUCKET }}
+
+      - name: Invalidar CDN
+        run: |
+          gcloud compute url-maps invalidate-cdn-cache thesis-rag-lb \
+            --path "/thesis-doc-test-2/*" \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            --async --quiet
