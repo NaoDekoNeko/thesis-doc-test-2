@@ -21,6 +21,11 @@ const config: Config = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
+  customFields: {
+    apiBaseUrl: 'https://thesis-rag-microservice-4cuwetikyq-uc.a.run.app',
+    docFolder: 'thesis-doc-test-2',
+  },
+
   i18n: {
     defaultLocale: 'es',
     locales: ['es'],
