@@ -15,8 +15,8 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://storage.googleapis.com',
-  baseUrl: '/thesis-rag-poc-thesis-doc-test-2/',
+  url: 'http://8.233.204.126',
+  baseUrl: '/thesis-doc-test-2/',
   trailingSlash: true,
 
   // GitHub pages deployment config.
