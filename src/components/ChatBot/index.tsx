@@ -101,7 +101,7 @@ const ChatBot: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [input, isLoading, API_BASE_URL, docFolder]);
+  }, [input, isLoading, API_BASE_URL]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
