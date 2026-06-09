@@ -19,7 +19,11 @@ const config: Config = {
   projectName: 'thesis-doc-test-2',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   customFields: {
     apiBaseUrl: 'https://thesis-rag-microservice-4cuwetikyq-uc.a.run.app',
