@@ -35,7 +35,6 @@ function buildSourceUrl(docFolder: string, url: string): string {
 const ChatBot: React.FC = () => {
   const { siteConfig } = useDocusaurusContext();
   const API_BASE_URL = siteConfig.customFields?.apiBaseUrl as string;
-  const docFolder = siteConfig.customFields?.docFolder as string;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -78,7 +77,7 @@ const ChatBot: React.FC = () => {
       const response = await fetch(`${API_BASE_URL}/chat/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: trimmed, docFolder }),
+        body: JSON.stringify({ question: trimmed }),
       });
 
       if (!response.ok) throw new Error(`Error ${response.status}`);
