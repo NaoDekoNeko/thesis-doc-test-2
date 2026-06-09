@@ -1,0 +1,8 @@
+{
+  "label": "📐 Patrones",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "SOLID, patrones de diseño y resiliencia para sistemas distribuidos."
+  }
+}

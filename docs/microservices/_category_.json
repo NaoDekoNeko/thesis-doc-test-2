@@ -1,0 +1,8 @@
+{
+  "label": "🧩 Microservicios",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Arquitectura distribuida, descomposición de servicios y comunicación."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "📋 ADRs",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Architecture Decision Records — decisiones técnicas del proyecto registradas formalmente."
+  }
+}
