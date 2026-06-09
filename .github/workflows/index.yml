@@ -32,7 +32,9 @@ jobs:
           doc-folder: thesis-doc-test-2
           clear: ${{ github.event.inputs.clear || 'true' }}
           gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
-          db-host: ${{ secrets.DB_HOST }}
+          wif-provider: ${{ secrets.WIF_PROVIDER }}
+          wif-service-account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          db-instance: ${{ secrets.DB_INSTANCE }}
           db-name: ${{ secrets.DB_NAME }}
           db-user: ${{ secrets.DB_USER }}
           db-password: ${{ secrets.DB_PASSWORD }}
