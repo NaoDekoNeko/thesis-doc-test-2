@@ -28,7 +28,10 @@ const SITE_URLS: Record<string, string> = {
 function buildSourceUrl(docFolder: string, url: string): string {
   const base = SITE_URLS[docFolder] ?? '';
   if (!url) return base || '#';
-  if (url.startsWith('http')) return url;
+  if (url.startsWith('http')) {
+    try { url = new URL(url).pathname; } catch { return url; }
+  }
+  url = url.replace(/\/index\.html$/, '/');
   return `${base}${url.startsWith('/') ? url : `/${url}`}`;
 }
 
