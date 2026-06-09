@@ -1,0 +1,63 @@
+---
+title: Patrones de Diseño
+category: patterns
+---
+
+# Patrones de Diseño
+
+## Patrones creacionales
+
+### Singleton
+
+Garantiza que una clase tenga una única instancia. En NestJS, los providers son singletons por defecto dentro del módulo donde se declaran.
+
+```typescript
+@Injectable() // singleton por defecto en NestJS
+export class DbService { ... }
+```
+
+### Factory
+
+Delega la creación de objetos a una subclase o función.
+
+```typescript
+// Pool de conexiones actúa como factory de conexiones
+const pool = new Pool({ host, port, database, user, password });
+const client = await pool.connect(); // factory method
+```
+
+## Patrones estructurales
+
+### Adapter
+
+Convierte la interfaz de una clase en otra que el cliente espera. El `DbService` actúa como adapter entre la API de `pg.Pool` y el resto de la aplicación.
+
+```typescript
+// Adapta la API de pg a una interfaz más simple
+class DbService {
+  query<T>(sql: string, params?: any[]) {
+    return this.pool.query<T>(sql, params);
+  }
+}
+```
+
+## Patrones de comportamiento
+
+### Strategy
+
+Define una familia de algoritmos intercambiables. El `SearchService` implementa una estrategia híbrida (semántica + FTS), pero podría parametrizarse para usar solo una de ellas.
+
+### Template Method
+
+Define el esqueleto de un algoritmo en una clase base, dejando que las subclases implementen pasos específicos. El flujo `hybridSearch` sigue este patrón:
+
+```
+hybridSearch()
+  ├── semanticSearch()    ← implementación concreta
+  ├── keywordSearch()     ← implementación concreta
+  └── combineAndRank()    ← lógica compartida
+```
+
+### Observer
+
+Patrón reactivo donde los suscriptores son notificados de cambios. En el pipeline de CD de los minisites, el push a `master` "notifica" al workflow de indexación cuando hay cambios en `docs/`, como se describe en [Platform Engineering Docs](https://storage.googleapis.com/thesis-rag-poc-thesis-doc-test-1/docs/cicd/pipelines).

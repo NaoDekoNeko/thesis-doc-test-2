@@ -1,0 +1,51 @@
+---
+title: Plantilla ADR
+category: adrs
+---
+
+# Architecture Decision Record — Plantilla
+
+Un ADR (Architecture Decision Record) documenta una decisión arquitectural significativa junto con su contexto y consecuencias.
+
+## Formato
+
+```markdown
+# ADR-NNN: Título de la decisión
+
+**Estado**: Propuesto | Aceptado | Deprecado | Reemplazado por ADR-XXX
+**Fecha**: YYYY-MM-DD
+**Decisores**: nombre(s)
+
+## Contexto
+
+Descripción del problema o necesidad que motivó esta decisión.
+Qué fuerzas están en juego (técnicas, de negocio, de equipo).
+
+## Decisión
+
+La decisión tomada, enunciada de forma clara y afirmativa.
+"Usaremos X para Y."
+
+## Consecuencias
+
+### Positivas
+- ...
+
+### Negativas / trade-offs
+- ...
+
+### Neutrales
+- ...
+```
+
+## Cuándo escribir un ADR
+
+Escribir un ADR cuando:
+- Se elige una tecnología o framework nuevo.
+- Se cambia la estructura de la base de datos.
+- Se define un patrón de comunicación entre servicios.
+- Se decide algo que será difícil o costoso de cambiar después.
+
+## Dónde viven los ADRs
+
+En este portal, en la sección `docs/adrs/`. Cada ADR es un archivo Markdown versionado en Git, lo que permite ver su evolución histórica con `git log`.

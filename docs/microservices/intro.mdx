@@ -1,0 +1,37 @@
+---
+title: Fundamentos de Microservicios
+category: microservices
+---
+
+# Fundamentos de Microservicios
+
+Una arquitectura de microservicios descompone una aplicación en servicios pequeños, independientes y desplegables por separado, cada uno responsable de una capacidad de negocio específica.
+
+## Características de un buen microservicio
+
+- **Responsabilidad única**: hace una cosa y la hace bien.
+- **Dueño de sus datos**: tiene su propia base de datos o esquema; no comparte tablas con otros servicios.
+- **Desplegable de forma independiente**: un cambio en el servicio A no requiere redesplegar el servicio B.
+- **Comunicación vía API**: expone sus capacidades a través de contratos explícitos (REST, gRPC, eventos).
+
+## Descomposición del dominio
+
+El proyecto descompone el problema en los siguientes servicios:
+
+| Servicio | Responsabilidad | Repo |
+|---|---|---|
+| `thesis-rag-microservice` | Búsqueda RAG + generación LLM | `thesis-rag-microservice` |
+| `thesis-doc-test-1` | Portal de documentación (Platform) | `thesis-doc-test-1` |
+| `thesis-doc-test-2` | Portal de documentación (Architecture) | `thesis-doc-test-2` |
+
+## Beneficios en el contexto del proyecto
+
+- Cada minisite puede actualizarse sin afectar el microservicio RAG.
+- El microservicio puede escalarse de forma independiente según la carga de queries.
+- Los pipelines CI/CD son completamente independientes, como se documenta en [Platform Engineering Docs](https://storage.googleapis.com/thesis-rag-poc-thesis-doc-test-1/index.html).
+
+## Retos a tener en cuenta
+
+- **Latencia de red**: las llamadas entre servicios agregan latencia. Mitigar con timeouts y circuit breakers.
+- **Consistencia eventual**: sin transacciones distribuidas, los datos pueden estar temporalmente inconsistentes.
+- **Complejidad operacional**: más servicios = más pipelines, más logs, más configuración. Por eso existe la ingeniería de plataforma.

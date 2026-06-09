@@ -1,0 +1,51 @@
+---
+title: "ADR-001: Stack RAG"
+category: adrs
+---
+
+# ADR-001: Stack tecnológico para el motor de búsqueda RAG
+
+**Estado**: Aceptado  
+**Fecha**: 2026-06-01  
+**Decisores**: Equipo de tesis
+
+## Contexto
+
+Se necesita un motor de búsqueda que permita hacer preguntas en lenguaje natural sobre la documentación de múltiples minisites Docusaurus y obtener respuestas contextualizadas.
+
+Las alternativas evaluadas:
+
+| Opción | Descripción |
+|---|---|
+| Búsqueda full-text clásica (Elasticsearch) | Alta precisión léxica, sin comprensión semántica |
+| Solo embeddings + pgvector | Semántica buena, sin FTS para términos exactos |
+| **Híbrido pgvector + FTS + LLM** | Combina semántica y léxico, genera respuesta natural |
+| RAG as a Service (externo) | Sin control, dependencia de tercero, costo variable |
+
+## Decisión
+
+Usaremos una arquitectura RAG propia con:
+- **pgvector** (PostgreSQL 15) para búsqueda semántica con embeddings de 768 dimensiones.
+- **PostgreSQL FTS** (`plainto_tsquery('spanish')`) para búsqueda por términos exactos.
+- **Gemini embedding-001** para generar embeddings de documentos y queries.
+- **Gemini 2.5 Flash** para generación de respuestas con el contexto recuperado.
+- **NestJS** como framework del microservicio de búsqueda.
+
+La búsqueda combina ambas fuentes con pesos: semántico 70%, FTS 30%.
+
+## Consecuencias
+
+### Positivas
+- Control total sobre el pipeline de indexación y búsqueda.
+- Un solo proveedor de LLM (Google) reduce la complejidad de integración.
+- pgvector elimina la necesidad de una base de datos vectorial separada.
+- El microservicio es stateless y escala horizontalmente en Cloud Run.
+
+### Negativas / trade-offs
+- Requiere gestionar la infraestructura de PostgreSQL (Cloud SQL).
+- Los embeddings se generan en batch; cambios en docs requieren re-indexación.
+- La latencia total (~4-6s) incluye el tiempo de generación del LLM.
+
+### Neutrales
+- El chunking de documentos (500 chars, 25% overlap) es configurable vía variables de entorno.
+- El pipeline de indexación se ejecuta como Docker container action en GitHub Actions, como se documenta en [Platform Engineering Docs](https://storage.googleapis.com/thesis-rag-poc-thesis-doc-test-1/docs/cicd/pipelines).

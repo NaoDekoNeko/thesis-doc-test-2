@@ -1,47 +1,31 @@
 ---
 sidebar_position: 1
+title: Software Architecture
+category: overview
 ---
 
-# Tutorial Intro
+# Software Architecture
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Este portal documenta los principios, patrones y decisiones de arquitectura de software del proyecto. Cubre desde los fundamentos de microservicios hasta las decisiones concretas registradas como ADRs.
 
-## Getting Started
+## Áreas documentadas
 
-Get started by **creating a new site**.
+| Área | Descripción |
+|---|---|
+| **Microservicios** | Fundamentos, descomposición y comunicación entre servicios |
+| **APIs** | Diseño REST, versionamiento y contratos |
+| **Patrones** | SOLID, patrones de diseño GoF y patrones de resiliencia |
+| **ADRs** | Architecture Decision Records del proyecto |
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+## Relación con plataforma
 
-### What you'll need
+La arquitectura de software define *qué* se construye. Las herramientas de plataforma documentadas en [Platform Engineering Docs](https://storage.googleapis.com/thesis-rag-poc-thesis-doc-test-1/index.html) definen *cómo* se despliega y opera.
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+Por ejemplo, este portal describe la arquitectura de microservicios con servicios independientes. El portal de plataforma describe los pipelines CI/CD que permiten desplegar cada servicio de forma autónoma.
 
-## Generate a new site
+## Principios guía
 
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- **Alta cohesión, bajo acoplamiento**: cada servicio tiene una responsabilidad única y bien definida.
+- **Design for failure**: los servicios asumen que sus dependencias pueden fallar.
+- **API-first**: los contratos de API se definen antes de implementar.
+- **Decisiones explícitas**: toda decisión arquitectural significativa queda registrada como ADR.

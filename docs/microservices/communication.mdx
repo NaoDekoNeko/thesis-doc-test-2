@@ -1,0 +1,67 @@
+---
+title: Comunicación entre servicios
+category: microservices
+---
+
+# Comunicación entre servicios
+
+## Comunicación síncrona (REST)
+
+El patrón más simple. El cliente espera la respuesta antes de continuar.
+
+```
+Cliente → POST /chat/ask → Microservicio RAG
+                             ├── PostgreSQL (pgvector)
+                             ├── Gemini API
+                             └── ← respuesta JSON
+```
+
+**Ventajas**: simple, depurable, predecible.  
+**Desventajas**: acoplamiento temporal; si el servicio destino falla, el cliente falla.
+
+## Resiliencia en comunicación síncrona
+
+### Timeouts
+
+Siempre definir un timeout explícito. Sin timeout, un servicio lento bloquea indefinidamente al cliente.
+
+```typescript
+const response = await fetch(url, {
+  signal: AbortSignal.timeout(30_000), // 30 segundos máximo
+});
+```
+
+### Circuit Breaker
+
+Patrón que "abre el circuito" cuando un servicio downstream falla repetidamente, evitando cascadas de errores.
+
+```
+Estado CERRADO → falla < umbral → sigue pasando requests
+Estado ABIERTO → falla > umbral → rechaza requests inmediatamente
+Estado SEMI-ABIERTO → intenta request de prueba → si OK, cierra
+```
+
+## Comunicación asíncrona (eventos)
+
+Para operaciones que no requieren respuesta inmediata, los eventos son más resilientes:
+
+```
+Minisite CD pipeline → publica evento "docs-updated"
+                           ↓
+                    Queue/Topic
+                           ↓
+                    Indexer consumer → procesa en background
+```
+
+En la arquitectura actual del proyecto, la indexación se hace de forma síncrona dentro del pipeline de CD (GitHub Actions). En una arquitectura de mayor escala, se migraría a un modelo basado en eventos con Pub/Sub.
+
+## Contrato de la API del microservicio RAG
+
+```typescript
+// POST /chat/ask
+Request:  { question: string; docFolder?: string; k?: number }
+Response: { answer: string; sources: Source[]; timing: Timing }
+
+// GET /chat/health
+Response: { status: 'ok'; db: 'ok' | 'error' }
+```

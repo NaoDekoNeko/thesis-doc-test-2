@@ -1,0 +1,50 @@
+---
+title: Versionamiento de APIs
+category: apis
+---
+
+# Versionamiento de APIs
+
+El versionamiento de APIs permite evolucionar el contrato sin romper clientes existentes.
+
+## Estrategias
+
+### URI versioning (más común)
+
+```
+/v1/chat/ask
+/v2/chat/ask
+```
+
+**Ventajas**: visible, cacheable, fácil de enrutar.  
+**Desventajas**: "contamina" la URL con metadatos de infraestructura.
+
+### Header versioning
+
+```http
+GET /chat/ask
+Accept: application/vnd.thesis-rag.v2+json
+```
+
+**Ventajas**: URLs limpias.  
+**Desventajas**: menos visible, más difícil de probar desde el browser.
+
+### Query param versioning
+
+```
+/chat/ask?version=2
+```
+
+**Desventajas**: no recomendado; mezcla datos de versión con parámetros de negocio.
+
+## Política de versiones para el microservicio RAG
+
+Para la PoC, el microservicio no versiona explícitamente (sin prefijo `/v1`). Al evolucionar a producción se adoptaría URI versioning con las siguientes reglas:
+
+- **Breaking changes** (cambio de contrato, campos eliminados): nueva versión mayor (`/v2`).
+- **Additive changes** (campos nuevos opcionales): misma versión, retrocompatible.
+- **Deprecation**: mínimo 3 meses de coexistencia entre versión vieja y nueva antes de eliminar.
+
+## Versionamiento en el contexto DAC
+
+La documentación como código también se versiona. Cada commit en `docs/` de un minisite dispara el pipeline de CD que re-indexa en el RAG. Así el motor de búsqueda siempre refleja la versión más reciente de la documentación, alineado con el pipeline documentado en [Platform Engineering Docs](https://storage.googleapis.com/thesis-rag-poc-thesis-doc-test-1/index.html).

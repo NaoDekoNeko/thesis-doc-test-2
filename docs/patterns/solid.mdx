@@ -1,0 +1,64 @@
+---
+title: Principios SOLID
+category: patterns
+---
+
+# Principios SOLID
+
+SOLID es un conjunto de cinco principios de diseño orientado a objetos que producen sistemas más mantenibles y extensibles.
+
+## S — Single Responsibility Principle
+
+Una clase debe tener una sola razón para cambiar.
+
+```typescript
+// ✅ Correcto: cada clase tiene una responsabilidad
+class SearchService   { search(query) {...} }
+class LlmService      { generateAnswer(question, sources) {...} }
+class ChatService     { ask(dto) { search + llm } }
+
+// ❌ Incorrecto: una clase hace todo
+class ChatService {
+  search(query) {...}
+  generateEmbedding(text) {...}
+  callGemini(prompt) {...}
+  saveToDb(result) {...}
+}
+```
+
+## O — Open/Closed Principle
+
+Abierto para extensión, cerrado para modificación.
+
+El `SearchService` combina búsqueda semántica y FTS. Para agregar una nueva fuente de búsqueda (e.g., Elasticsearch), se extiende `hybridSearch` sin modificar la lógica existente.
+
+## L — Liskov Substitution Principle
+
+Los subtipos deben ser sustituibles por sus tipos base sin alterar el comportamiento.
+
+## I — Interface Segregation Principle
+
+Mejor muchas interfaces específicas que una interfaz general.
+
+```typescript
+// Interfaces específicas por capacidad
+interface Searchable  { search(query: string): Promise<SearchResult[]> }
+interface Embeddable  { embed(text: string): Promise<number[]> }
+```
+
+## D — Dependency Inversion Principle
+
+Depender de abstracciones, no de implementaciones concretas.
+
+```typescript
+// NestJS aplica DI por construcción:
+@Injectable()
+export class ChatService {
+  constructor(
+    private readonly searchService: SearchService, // inyectado
+    private readonly llmService: LlmService,       // inyectado
+  ) {}
+}
+```
+
+NestJS gestiona el contenedor de IoC, instanciando y resolviendo dependencias automáticamente. Esto facilita el testing unitario con mocks.

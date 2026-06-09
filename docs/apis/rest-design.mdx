@@ -1,0 +1,79 @@
+---
+title: Diseño de APIs REST
+category: apis
+---
+
+# Diseño de APIs REST
+
+## Principios fundamentales
+
+### Recursos, no acciones
+
+Las URLs representan recursos (sustantivos), no acciones (verbos).
+
+```
+✅  POST /chat/ask          → el recurso es "chat", la acción es el método HTTP
+✅  GET  /chat/health       → health es un sub-recurso
+❌  POST /runSearch         → verbo en la URL
+❌  GET  /getHealth
+```
+
+### Uso correcto de métodos HTTP
+
+| Método | Semántica | Idempotente |
+|---|---|---|
+| GET | Leer un recurso | Sí |
+| POST | Crear o procesar | No |
+| PUT | Reemplazar completo | Sí |
+| PATCH | Modificar parcial | No necesariamente |
+| DELETE | Eliminar | Sí |
+
+### Códigos de respuesta
+
+| Código | Uso |
+|---|---|
+| 200 | OK — respuesta exitosa con body |
+| 201 | Created — recurso creado |
+| 400 | Bad Request — error del cliente (body mal formado) |
+| 401 | Unauthorized — no autenticado |
+| 403 | Forbidden — autenticado pero sin permisos |
+| 404 | Not Found — recurso no existe |
+| 500 | Internal Server Error — error no manejado del servidor |
+
+## Diseño del endpoint `/chat/ask`
+
+```
+POST /chat/ask
+Content-Type: application/json
+
+{
+  "question": "¿Cómo configurar un pipeline de CI/CD?",
+  "docFolder": "thesis-doc-test-1",   // opcional
+  "k": 8                               // opcional, default 8
+}
+
+→ 200 OK
+{
+  "answer": "Para configurar un pipeline...",
+  "sources": [
+    {
+      "docFolder": "thesis-doc-test-1",
+      "title": "GitHub Actions",
+      "url": "/docs/cicd/github-actions",
+      "score": 0.92
+    }
+  ],
+  "searchType": "hybrid",
+  "timing": { "searchMs": 1200, "generationMs": 3100, "totalMs": 4300 }
+}
+```
+
+## CORS
+
+El microservicio habilita CORS para permitir requests desde los minisites:
+
+```typescript
+app.enableCors(); // permite todos los orígenes en PoC
+```
+
+En producción se restringiría a los dominios de los minisites.
