@@ -25,6 +25,11 @@ const SITE_URLS: Record<string, string> = {
   'thesis-doc-test-2': 'https://software-arch.naodeko.site',
 };
 
+const SITE_NAMES: Record<string, string> = {
+  'thesis-doc-test-1': 'Platform Engineering',
+  'thesis-doc-test-2': 'Software Architecture',
+};
+
 function buildSourceUrl(docFolder: string, url: string): string {
   const base = SITE_URLS[docFolder] ?? '';
   if (!url) return base || '#';
@@ -210,7 +215,7 @@ const ChatBot: React.FC = () => {
                       <div className={styles.sourcesList}>
                         {msg.sources.slice(0, 5).map((source, i) => (
                           <a key={i} href={buildSourceUrl(source.docFolder, source.url)} className={styles.sourceItem} target="_blank" rel="noopener noreferrer">
-                            <span className={styles.sourceFolder}>{source.docFolder}</span>
+                            <span className={styles.sourceFolder}>{SITE_NAMES[source.docFolder] ?? source.docFolder}</span>
                             <span className={styles.sourceTitle}>{source.title}</span>
                             {source.category && <span className={styles.sourceCategory}>{source.category}</span>}
                           </a>
