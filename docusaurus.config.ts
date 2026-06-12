@@ -11,8 +11,8 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'http://8.233.204.126',
-  baseUrl: '/thesis-doc-test-2/',
+  url: 'https://software-arch.naodeko.site',
+  baseUrl: '/',
   trailingSlash: true,
 
   organizationName: 'NaoDekoNeko',
@@ -26,7 +26,7 @@ const config: Config = {
   },
 
   customFields: {
-    apiBaseUrl: 'https://thesis-rag-microservice-4cuwetikyq-uc.a.run.app',
+    apiBaseUrl: 'https://api.naodeko.site',
     docFolder: 'thesis-doc-test-2',
   },
 
@@ -70,7 +70,7 @@ const config: Config = {
           label: 'Documentación',
         },
         {
-          href: 'http://8.233.204.126/thesis-doc-test-1/',
+          href: 'https://platform-eng.naodeko.site/',
           label: '← Platform Engineering',
           position: 'left',
         },
@@ -98,7 +98,7 @@ const config: Config = {
           items: [
             {
               label: 'Platform Engineering Docs',
-              href: 'http://8.233.204.126/thesis-doc-test-1/',
+              href: 'https://platform-eng.naodeko.site/',
             },
           ],
         },

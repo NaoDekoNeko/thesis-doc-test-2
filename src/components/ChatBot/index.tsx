@@ -21,8 +21,8 @@ interface ChatMessage {
 }
 
 const SITE_URLS: Record<string, string> = {
-  'thesis-doc-test-1': 'http://8.233.204.126/thesis-doc-test-1',
-  'thesis-doc-test-2': 'http://8.233.204.126/thesis-doc-test-2',
+  'thesis-doc-test-1': 'https://platform-eng.naodeko.site',
+  'thesis-doc-test-2': 'https://software-arch.naodeko.site',
 };
 
 function buildSourceUrl(docFolder: string, url: string): string {

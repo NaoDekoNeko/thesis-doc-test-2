@@ -38,3 +38,4 @@ jobs:
           db-name: ${{ secrets.DB_NAME }}
           db-user: ${{ secrets.DB_USER }}
           db-password: ${{ secrets.DB_PASSWORD }}
+          microservice-url: ${{ secrets.MICROSERVICE_URL }}

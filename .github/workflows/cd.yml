@@ -39,11 +39,11 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
 
       - name: Deploy a GCS
-        run: gcloud storage rsync -R --delete-unmatched-destination-objects ./build gs://${{ secrets.GCS_BUCKET }}/thesis-doc-test-2
+        run: gcloud storage rsync -R --delete-unmatched-destination-objects ./build gs://${{ secrets.GCS_BUCKET }}
 
       - name: Invalidar CDN
         run: |
           gcloud compute url-maps invalidate-cdn-cache thesis-rag-lb \
-            --path "/thesis-doc-test-2/*" \
+            --path "/*" \
             --project ${{ secrets.GCP_PROJECT_ID }} \
             --async --quiet
