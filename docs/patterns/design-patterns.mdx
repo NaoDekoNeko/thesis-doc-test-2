@@ -61,3 +61,22 @@ hybridSearch()
 ### Observer
 
 Patrón reactivo donde los suscriptores son notificados de cambios. En el pipeline de CD de los minisites, el push a `master` "notifica" al workflow de indexación cuando hay cambios en `docs/`, como se describe en [Platform Engineering Docs](https://storage.googleapis.com/thesis-rag-poc-thesis-doc-test-1/docs/cicd/pipelines).
+
+## Patrones de resiliencia
+
+### Circuit Breaker
+
+Evita que un servicio siga invocando a una dependencia que está fallando. Tras un umbral de errores consecutivos, el circuito se "abre" y las llamadas fallan de inmediato (o degradan a un fallback), dando tiempo a la dependencia para recuperarse antes de reintentar.
+
+```
+Estados: CLOSED → (fallos > umbral) → OPEN → (timeout) → HALF-OPEN
+  ├── CLOSED: las llamadas pasan normalmente
+  ├── OPEN: las llamadas fallan rápido sin tocar la dependencia
+  └── HALF-OPEN: una llamada de prueba decide si cerrar o reabrir
+```
+
+En un microservicio de consulta que depende de una API externa de inferencia, este patrón acota la latencia percibida cuando el proveedor se degrada: en lugar de acumular timeouts, el servicio responde con búsqueda léxica local como degradación controlada. Complementa los reintentos con retroceso exponencial que aplican los pipelines de CI/CD ante fallos transitorios.
+
+### Retry con retroceso exponencial
+
+Reintenta una operación fallida con esperas crecientes (1s, 2s, 4s, ...) para no saturar una dependencia en recuperación. Es la contraparte "optimista" del Circuit Breaker: útil para fallos transitorios de red o cuotas momentáneas de API, siempre acotado por un número máximo de intentos.
