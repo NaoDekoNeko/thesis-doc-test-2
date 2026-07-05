@@ -1,0 +1,127 @@
+name: Semantic CI
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-validation:
+    name: Validar build de Docusaurus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+  semantic-regression:
+    name: Regresión semántica (ground truth IR)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ragdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_HOST: localhost
+      DB_PORT: '5432'
+      DB_NAME: ragdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    steps:
+      - name: Checkout PR (minisitio propio)
+        uses: actions/checkout@v4
+        with:
+          path: self
+
+      - name: Checkout minisitio hermano (thesis-doc-test-1)
+        uses: actions/checkout@v4
+        with:
+          repository: NaoDekoNeko/thesis-doc-test-1
+          path: sibling
+
+      - name: Checkout microservicio (indexer, eval, ground truth)
+        uses: actions/checkout@v4
+        with:
+          repository: NaoDekoNeko/thesis-rag-microservice
+          path: microservice
+
+      - name: Habilitar extensión pgvector
+        run: |
+          sudo apt-get install -y postgresql-client > /dev/null 2>&1 || true
+          PGPASSWORD=postgres psql -h localhost -U postgres -d ragdb \
+            -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r microservice/indexer/requirements.txt
+
+      - name: Indexar minisitio propio (PR)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DOC_FOLDER: thesis-doc-test-2
+          DOCS_PATH: ${{ github.workspace }}/self/docs
+          CLEAR: 'true'
+        run: python microservice/indexer/document_processor.py
+
+      - name: Indexar minisitio hermano (estado actual)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DOC_FOLDER: thesis-doc-test-1
+          DOCS_PATH: ${{ github.workspace }}/sibling/docs
+          CLEAR: 'true'
+        run: python microservice/indexer/document_processor.py
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build microservicio
+        working-directory: microservice
+        run: pnpm install --frozen-lockfile && pnpm build
+
+      - name: Levantar microservicio contra Postgres efímero
+        working-directory: microservice
+        env:
+          PORT: '3000'
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          nohup node dist/main.js > microservice.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/chat/health > /dev/null; then
+              echo "Microservicio arriba."
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Evaluar contra ground truth y comparar con baseline
+        working-directory: microservice
+        env:
+          MICROSERVICE_URL: http://localhost:3000
+        run: |
+          npx ts-node --transpile-only eval/run-eval.ts
+          npx ts-node --transpile-only eval/compare-baseline.ts
