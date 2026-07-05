@@ -110,13 +110,20 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           nohup node dist/main.js > microservice.log 2>&1 &
+          up=false
           for i in $(seq 1 30); do
             if curl -sf http://localhost:3000/chat/health > /dev/null; then
               echo "Microservicio arriba."
+              up=true
               break
             fi
             sleep 2
           done
+          if [ "$up" != "true" ]; then
+            echo "::error::El microservicio no respondió en 60s. Log completo:"
+            cat microservice.log
+            exit 1
+          fi
 
       - name: Evaluar contra ground truth y comparar con baseline
         working-directory: microservice
