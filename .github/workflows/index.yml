@@ -30,7 +30,7 @@ jobs:
         with:
           docs-path: ${{ github.workspace }}/docs
           doc-folder: thesis-doc-test-2
-          clear: ${{ github.event.inputs.clear || 'true' }}
+          clear: ${{ github.event.inputs.clear || 'false' }}
           gemini-api-key: ${{ secrets.GEMINI_API_KEY }}
           wif-provider: ${{ secrets.WIF_PROVIDER }}
           wif-service-account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
