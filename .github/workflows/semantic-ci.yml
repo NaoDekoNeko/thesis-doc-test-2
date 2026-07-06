@@ -140,7 +140,7 @@ jobs:
 
       - name: Publicar resultado como comentario del PR
         if: always()
-        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file microservice/eval/pr-comment.md --edit-last --create-if-none
+        run: gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body-file microservice/eval/pr-comment.md --edit-last --create-if-none
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
